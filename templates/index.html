@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PC Builder Tool - Trial 3</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Custom PC Hardware Finder</h1>
+        
+        <div class="card">
+            <form action="/" method="GET">
+                <fieldset>
+                    <label for="budget">Target CPU Budget ($):</label>
+                    <input type="number" id="budget" name="budget" placeholder="e.g. 500" value="{{ budget or '' }}" min="0" step="10">
+
+                    <label>Primary Use Case:</label>
+                    <div class="grid-options">
+                        <label class="option-card">
+                            <input type="radio" name="use" value="all" {% if selected_use == 'all' or not selected_use %}checked{% endif %}> All Purpose
+                        </label>
+                        <label class="option-card">
+                            <input type="radio" name="use" value="gaming" {% if selected_use == 'gaming' %}checked{% endif %}> Gaming
+                        </label>
+                        <label class="option-card">
+                            <input type="radio" name="use" value="editing" {% if selected_use == 'editing' %}checked{% endif %}> Workstation
+                        </label>
+                    </div>
+                </fieldset>
+
+                <button type="submit" class="submit-btn">Filter Components</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Matching Processors</h2>
+            <div class="cpu-list">
+                {% if cpus %}
+                    {% for cpu in cpus %}
+                        <div class="cpu-item">
+                            <div>
+                                <strong>{{ cpu['CPU_Model'] }}</strong>
+                                <br><span class="muted-info">Socket: {{ cpu['Socket'] }} | Cores: {{ cpu['Cores'] }} | Threads: {{ cpu['Threads'] }}</span>
+                            </div>
+                            <div class="price">${{ cpu['Price'] }}</div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No processors match your specified budget criteria.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
