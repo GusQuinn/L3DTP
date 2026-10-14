@@ -3,56 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PC Builder Tool - Trial 3</title>
+    <title>PC Maker - Full System Builder</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
     <div class="container">
-        <h1>Custom PC Hardware Finder</h1>
+        <h1>Custom PC Hardware Builder</h1>
         
+        <!-- Input Form Card -->
         <div class="card">
             <form action="/" method="GET">
                 <fieldset>
-                    <label for="budget">Target CPU Budget ($):</label>
-                    <input type="number" id="budget" name="budget" placeholder="e.g. 500" value="{{ budget or '' }}" min="0" step="10">
+                    <label for="budget">Total System Budget ($):</label>
+                    <input type="number" id="budget" name="budget" placeholder="e.g. 1500" value="{{ budget or '' }}" min="800" step="50">
 
                     <label>Primary Use Case:</label>
                     <div class="grid-options">
                         <label class="option-card">
-                            <input type="radio" name="use" value="all" {% if selected_use == 'all' or not selected_use %}checked{% endif %}> All Purpose
+                            <input type="radio" name="use" value="gaming" {% if selected_use == 'gaming' or not selected_use %}checked{% endif %}> Gaming
                         </label>
                         <label class="option-card">
-                            <input type="radio" name="use" value="gaming" {% if selected_use == 'gaming' %}checked{% endif %}> Gaming
+                            <input type="radio" name="use" value="editing" {% if selected_use == 'editing' %}checked{% endif %}> Workstation / Editing
                         </label>
                         <label class="option-card">
-                            <input type="radio" name="use" value="editing" {% if selected_use == 'editing' %}checked{% endif %}> Workstation
+                            <input type="radio" name="use" value="office" {% if selected_use == 'office' %}checked{% endif %}> Office / General
                         </label>
                     </div>
                 </fieldset>
 
-                <button type="submit" class="submit-btn">Filter Components</button>
+                <button type="submit" class="submit-btn">Generate Compatible Build</button>
             </form>
         </div>
 
-        <div class="card">
-            <h2>Matching Processors</h2>
-            <div class="cpu-list">
-                {% if cpus %}
-                    {% for cpu in cpus %}
-                        <div class="cpu-item">
-                            <div>
-                                <strong>{{ cpu['CPU_Model'] }}</strong>
-                                <br><span class="muted-info">Socket: {{ cpu['Socket'] }} | Cores: {{ cpu['Cores'] }} | Threads: {{ cpu['Threads'] }}</span>
-                            </div>
-                            <div class="price">${{ cpu['Price'] }}</div>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <p>No processors match your specified budget criteria.</p>
-                {% endif %}
+        <!-- Error Handling Display -->
+        {% if error_message %}
+            <div class="card" style="border-left: 4px solid #ef4444; color: #f87171;">
+                <strong>Error:</strong> {{ error_message }}
             </div>
-        </div>
+        {% endif %}
+
+        <!-- Generated PC Build Results Card -->
+        {% if selected_build %}
+            <div class="card">
+                <h2>Recommended Compatible Hardware List</h2>
+                <div class="cpu-list">
+                    <div class="cpu-item">
+                        <div>
+                            <strong>Processor (CPU):</strong> {{ selected_build['CPU_Model'] }}
+                            <br><span class="muted-info">Socket: {{ selected_build['CPU_Socket'] }}</span>
+                        </div>
+                        <div class="price">${{ selected_build['CPU_Price'] }}</div>
+                    </div>
+
+                    <div class="cpu-item">
+                        <div>
+                            <strong>Motherboard:</strong> {{ selected_build['Chipset'] }} Motherboard
+                            <br><span class="muted-info">Socket: {{ selected_build['CPU_Socket'] }} | Memory Type: {{ selected_build['RAM_Type'] }}</span>
+                        </div>
+                        <div class="price">${{ selected_build['MB_Price'] }}</div>
+                    </div>
+
+                    <div class="cpu-item">
+                        <div>
+                            <strong>Graphics Card (GPU):</strong> {{ selected_build['GPU_Model'] }}
+                        </div>
+                        <div class="price">${{ selected_build['GPU_Price'] }}</div>
+                    </div>
+
+                    <div class="cpu-item">
+                        <div>
+                            <strong>System Memory (RAM):</strong> {{ selected_build['RAM_Model'] }}
+                            <br><span class="muted-info">Type: {{ selected_build['RAM_Type'] }}</span>
+                        </div>
+                        <div class="price">${{ selected_build['RAM_Price'] }}</div>
+                    </div>
+
+                    <div class="cpu-item">
+                        <div>
+                            <strong>Storage (SSD):</strong> {{ selected_build['SSD_Name'] }}
+                        </div>
+                        <div class="price">${{ selected_build['SSD_Price'] }}</div>
+                    </div>
+
+                    <div class="cpu-item">
+                        <div>
+                            <strong>Power Supply (PSU):</strong> {{ selected_build['PSU_Model'] }}
+                        </div>
+                        <div class="price">${{ selected_build['PSU_Price'] }}</div>
+                    </div>
+
+                    <div class="cpu-item" style="border-left-color: #4ade80; background: #0f172a; margin-top: 10px;">
+                        <div>
+                            <strong style="font-size: 1.2rem; color: #38bdf8;">Total Estimated Price:</strong>
+                        </div>
+                        <div class="price" style="font-size: 1.4rem;">${{ selected_build['Total_Build_Price'] }}</div>
+                    </div>
+                </div>
+            </div>
+        {% elif budget and not error_message %}
+            <div class="card">
+                <p>No compatible hardware build could be found within your specified budget. Try increasing your target budget.</p>
+            </div>
+        {% endif %}
     </div>
 
 </body>
