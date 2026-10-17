@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, url_for, redirect, request
 import sqlite3
 
 app = Flask(__name__)
 
+#Connect to the database
 def get_db():
     conn = sqlite3.connect('PC.db')
     conn.row_factory = sqlite3.Row
@@ -21,6 +22,7 @@ def parse_price(val):
     except ValueError:
         return 0.0
 
+#Main page
 @app.route('/', methods=['GET'])
 def index():
     raw_budget = request.args.get('budget', '').strip()
@@ -136,6 +138,32 @@ def index():
         selected_build=selected_build,
         error_message=error_message
     )
+
+#Add review submissions
+@app.route('/review', methods=['POST'])
+def add_review():
+    name = request.form.get('reviewer_name', 'Anonymous').strip()
+    rating = request.form.get('rating', type=int, default=5)
+    comment = request.form.get('comments', '').strip()
+
+    # Input validation: Ensure comments are provided
+    if not comment:
+        return redirect(url_for('index'))
+
+    try:
+        conn = get_db()
+        # SQL INSERT query
+        insert_query = """
+            INSERT INTO Review (Name, Rating, Comment)
+            VALUES (?, ?, ?)
+        """
+        conn.execute(insert_query, [name, rating, comment])
+        conn.commit()  # Save changes to PC.db
+        conn.close()
+    except sqlite3.Error as e:
+        print(f"Database insertion failed: {e}")
+
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True)

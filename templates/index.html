@@ -108,5 +108,27 @@
         {% endif %}
     </div>
 
+    <div class="card" style="margin-top: 20px;">
+    <h2>Leave Build Feedback</h2>
+        <form action="/review" method="POST">
+            <label for="reviewer_name">Your Name / Username:</label>
+            <input type="text" id="reviewer_name" name="reviewer_name" placeholder="e.g. Alex" required style="width: 100%; padding: 10px; margin-bottom: 12px; background: var(--input-bg); color: var(--text); border: 1px solid var(--border); border-radius: 6px;">
+
+            <label for="rating">Build Rating (1 to 5):</label>
+            <select id="rating" name="rating" style="width: 100%; padding: 10px; margin-bottom: 12px; background: var(--input-bg); color: var(--text); border: 1px solid var(--border); border-radius: 6px;">
+                <option value="5">5 - Excellent Compatibility & Price</option>
+                <option value="4">4 - Good Build Recommendations</option>
+                <option value="3">3 - Average Selection</option>
+                <option value="2">2 - Needs More Hardware Choices</option>
+                <option value="1">1 - Poor Match</option>
+            </select>
+
+            <label for="comments">Comments & Suggestions:</label>
+            <textarea id="comments" name="comments" rows="3" placeholder="How accurate were the generated hardware choices?" style="width: 100%; padding: 10px; background: var(--input-bg); color: var(--text); border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box;"></textarea>
+
+            <button type="submit" class="submit-btn" style="margin-top: 15px;">Submit Review</button>
+        </form>
+    </div>
+
 </body>
 </html>
